@@ -1,0 +1,120 @@
+﻿@using AppManagement.Models
+@model ApplicationViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>Create Application</h4></div>
+        <div class="panel-body">
+            @foreach (var m in Model.HouseMembers)
+            {
+               using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    @Html.HiddenFor(i => m.Id)
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.FirstName, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
+                            @Html.TextBoxFor(i => m.FirstName, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.MiddleName, new { @class = "control-label" }) 
+                            @Html.TextBoxFor(i => m.MiddleName, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.LastName, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
+                            @Html.TextBoxFor(i => m.LastName, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.Suffix, new { @class = "control-label" })
+                            @Html.DropDownListFor(i => m.Suffix, new SelectList(new[] { new SelectListItem() { Text = "Mr", Value = "Mr" }, new SelectListItem() { Text = "Mrs", Value = "Mrs" } }, "Value", "Text", m.Suffix), "Select", new { @class = "form-control required" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.DateOfBirth, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
+                            @Html.EditorFor(model => m.DateOfBirth, new { htmlAttributes = new { @class = "form-control", placeholder = "Date Of Birth", @readonly = "true" } })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.LabelFor(i => m.Gender, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
+                            <div>
+                                <label>
+                                    @Html.RadioButtonFor(i => m.Gender, "Male", new { @class = "control-label" })
+                                    Male
+                                </label>
+                                <label>
+                                    @Html.RadioButtonFor(i => m.Gender, "Female", new { @class = "control-label" })
+                                    Female
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-primary control-label pull-right" value="Add Member" />
+                        </div>
+                    </div>
+                }
+             }
+        </div>
+        <div class="panel-footer">Panel footer</div>
+    </div>
+    <div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home">...</div>
+            <div role="tabpanel" class="tab-pane" id="profile">...P</div>
+            <div role="tabpanel" class="tab-pane" id="messages">...M</div>
+            <div role="tabpanel" class="tab-pane" id="settings">...</div>
+        </div>
+
+    </div>
+
+<div class="col-lg-6 col-sm-6">
+    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+            <button type="button" id="stars" class="btn btn-primary" href="#tab1" data-toggle="tab">
+                <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                <div class="hidden-xs">Stars</div>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" id="favorites" class="btn btn-default" href="#tab2" data-toggle="tab">
+                <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+                <div class="hidden-xs">Favorites</div>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" id="following" class="btn btn-default" href="#tab3" data-toggle="tab">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <div class="hidden-xs">Following</div>
+            </button>
+        </div>
+    </div>
+
+    <div class="well">
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="tab1">
+                <h3>This is tab 1</h3>
+            </div>
+            <div class="tab-pane fade in" id="tab2">
+                <h3>This is tab 2</h3>
+            </div>
+            <div class="tab-pane fade in" id="tab3">
+                <h3>This is tab 3</h3>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -3,3 +3,5 @@
 ################################################################################
 
 /AppManagement/obj/Debug
+/AppManagement/bin
+/packages
