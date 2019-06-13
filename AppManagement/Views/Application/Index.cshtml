@@ -3,83 +3,126 @@
 @{
     ViewBag.Title = "Index";
 }
-
+@using (Html.BeginForm("Save", "Application", FormMethod.Post, new { @class = "form-horizontal", role = "form", id="frmApp" }))
+{
     <div class="panel panel-default">
-        <div class="panel-heading"><h4>Create Application</h4></div>
-        <div class="panel-body">
-            @foreach (var m in Model.HouseMembers)
-            {
-               using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        <div class="panel-heading">
+            <div class="row">
+                @if (Model.Id > 0)
                 {
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
-
-                    @Html.HiddenFor(i => m.Id)
-                    <div class="row">
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.FirstName, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
-                            @Html.TextBoxFor(i => m.FirstName, new { @class = "form-control" })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.MiddleName, new { @class = "control-label" }) 
-                            @Html.TextBoxFor(i => m.MiddleName, new { @class = "form-control" })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.LastName, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
-                            @Html.TextBoxFor(i => m.LastName, new { @class = "form-control" })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.Suffix, new { @class = "control-label" })
-                            @Html.DropDownListFor(i => m.Suffix, new SelectList(new[] { new SelectListItem() { Text = "Mr", Value = "Mr" }, new SelectListItem() { Text = "Mrs", Value = "Mrs" } }, "Value", "Text", m.Suffix), "Select", new { @class = "form-control required" })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.DateOfBirth, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
-                            @Html.EditorFor(model => m.DateOfBirth, new { htmlAttributes = new { @class = "form-control", placeholder = "Date Of Birth", @readonly = "true" } })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.LabelFor(i => m.Gender, new { @class = "control-label" })@Html.Label("*", new { @class = "text-danger" })
-                            <div>
-                                <label>
-                                    @Html.RadioButtonFor(i => m.Gender, "Male", new { @class = "control-label" })
-                                    Male
-                                </label>
-                                <label>
-                                    @Html.RadioButtonFor(i => m.Gender, "Female", new { @class = "control-label" })
-                                    Female
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <input type="submit" class="btn btn-primary control-label pull-right" value="Add Member" />
-                        </div>
-                    </div>
+                    <h4 class="col-md-8">Application Number : @Model.Id</h4>
                 }
-             }
+                else
+                {
+                    <h4 class="col-md-8">Create Application</h4>
+                }
+                @Html.Label("* Required Field", new { @class = "text-danger col-md-2 pull-right" })
+            </div>
         </div>
-        <div class="panel-footer">Panel footer</div>
-    </div>
-    <div>
+        <div class="panel-body">
+            @Html.HiddenFor(i => Model.Id)
+            @for (int index = 0; index < Model.HouseMembers.Count; index++)
+            {
+                @Html.HiddenFor(i => Model.HouseMembers[index].Id)
+                @Html.HiddenFor(i => Model.HouseMembers[index].isHeadMember)
+                <div class="row"><div class="col-md-3">
+                    <b>Household Member @(index + 1) of @Model.HouseMembers.Count()</b>
+                    @if (!Model.HouseMembers[index].isHeadMember)
+                    {
+                        @Html.ActionLink("(Remove)", "", "", null, new { @onclick = "$(this).parents('form').attr('action','/Application/RemoveMember?id=" + @Model.HouseMembers[index].Id + "');$(this).parents('form').submit();return false;" })
+                    }
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.Label("* ", new { @class = "text-danger" })
+                        @Html.LabelFor(i => Model.HouseMembers[index].FirstName, new { @class = "control-label" })
+                        @Html.TextBoxFor(i => Model.HouseMembers[index].FirstName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => Model.HouseMembers[index].FirstName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(i => Model.HouseMembers[index].MiddleName, new { @class = "control-label" })
+                        @Html.TextBoxFor(i => Model.HouseMembers[index].MiddleName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => Model.HouseMembers[index].MiddleName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Label("*", new { @class = "text-danger" })
+                        @Html.LabelFor(i => Model.HouseMembers[index].LastName, new { @class = "control-label" })
+                        @Html.TextBoxFor(i => Model.HouseMembers[index].LastName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => Model.HouseMembers[index].LastName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(i => Model.HouseMembers[index].Suffix, new { @class = "control-label" })
+                        @Html.DropDownListFor(i => Model.HouseMembers[index].Suffix, new SelectList(new[] { new SelectListItem() { Text = "Mr", Value = "Mr" }, new SelectListItem() { Text = "Mrs", Value = "Mrs" } }, "Value", "Text", Model.HouseMembers[index].Suffix), "Select", new { @class = "form-control required" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.Label("*", new { @class = "text-danger" })
+                        @Html.LabelFor(i => Model.HouseMembers[index].DateOfBirth, new { @class = "control-label" })
+                        @Html.EditorFor(i => Model.HouseMembers[index].DateOfBirth, new { htmlAttributes = new { @class = "form-control", placeholder = "Date Of Birth", @readonly = "true" } })
+                        @Html.ValidationMessageFor(m => Model.HouseMembers[index].DateOfBirth, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Label("*", new { @class = "text-danger" })
+                        @Html.LabelFor(i => Model.HouseMembers[index].Gender, new { @class = "control-label" })
+                        <div>
+                            <label>
+                                @Html.RadioButtonFor(i => Model.HouseMembers[index].Gender, "Male", new { @class = "control-label" })
+                                Male
+                            </label>
+                            <label>
+                                @Html.RadioButtonFor(i => Model.HouseMembers[index].Gender, "Female", new { @class = "control-label" })
+                                Female
+                            </label>
+                        </div>
+                        @Html.ValidationMessageFor(m => Model.HouseMembers[index].Gender, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @if (index == Model.HouseMembers.Count - 1 && Model.HouseMembers.Count <5)
+                        {
+                            @Html.ActionLink("Add Member", "", "", null, new { @class = "btn btn-primary control-label pull-right", @onclick = "$(this).parents('form').attr('action','/Application/AddMember?id=" + new Random().Next() + "');$(this).parents('form').submit();return false;" })
+                        } &nbsp;
+                    </div>
+                </div>
+            }
 
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
-            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
-            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="home">...</div>
-            <div role="tabpanel" class="tab-pane" id="profile">...P</div>
-            <div role="tabpanel" class="tab-pane" id="messages">...M</div>
-            <div role="tabpanel" class="tab-pane" id="settings">...</div>
         </div>
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-md-10">
+                        <input type="submit" value="Save & Exit" class="btn btn-primary control-label" />
+                    </div>
+                    <div class="col-md-2">
+                        @Html.ActionLink(" Next  ", "Relationship", "Application", new { @id = Model.Id }, new { @class = "btn btn-primary control-label  pull-right" })
+                        <span class="pull-right">&nbsp;&nbsp;</span>
+                        @Html.ActionLink(" Back ", "Index", "Home", null, new { @class = "btn btn-primary control-label  pull-right" })
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+<div>
 
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="home">...</div>
+        <div role="tabpanel" class="tab-pane" id="profile">...P</div>
+        <div role="tabpanel" class="tab-pane" id="messages">...M</div>
+        <div role="tabpanel" class="tab-pane" id="settings">...</div>
     </div>
+
+</div>
 
 <div class="col-lg-6 col-sm-6">
     <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
