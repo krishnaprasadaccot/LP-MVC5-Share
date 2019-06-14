@@ -6,3 +6,8 @@
 /AppManagement/bin
 /packages
 /.vs/AppManagement
+/App.Api/bin/Debug/netcoreapp2.1
+/App.Entities/bin/Debug/netstandard2.0
+/App.Entities/obj
+/App.Api/obj
+/App.Web/bin
