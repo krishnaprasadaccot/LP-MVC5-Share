@@ -10,6 +10,6 @@ namespace AppManagement.Models
     {
         public int Id { get; set; }
         public IList<HouseMemberModel> HouseMembers { get; set; }
-
+        public int ActiveMemberId { get; set; }
     }
 }

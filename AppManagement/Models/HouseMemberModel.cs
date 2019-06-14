@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AppManagement.Models
@@ -10,7 +11,7 @@ namespace AppManagement.Models
         [Required]
         [Display(Name = "First Name")]
         [MaxLength(32,ErrorMessage ="Maximum 32 characters only allowed for this field")]
-        public string FirstName { get; set; }
+        public virtual string FirstName { get; set; }
 
         [Display(Name = "M.I.")]
         [MaxLength(32, ErrorMessage = "Maximum 32 characters only allowed for this field")]
@@ -19,7 +20,7 @@ namespace AppManagement.Models
         [Required]
         [Display(Name = "Last Name")]
         [MaxLength(32, ErrorMessage = "Maximum 32 characters only allowed for this field")]
-        public string LastName { get; set; }
+        public virtual string LastName { get; set; }
 
         [Display(Name = "Suffix")]
         public string Suffix { get; set; }
@@ -29,13 +30,13 @@ namespace AppManagement.Models
         [DataType(DataType.DateTime, ErrorMessage = "Valid Date of Birth is required")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
         [Display(Name = "Date of Birth(mm/dd/yyyy)")]
-        public DateTime? DateOfBirth { get; set; } = null;
+        public virtual DateTime? DateOfBirth { get; set; } = null;
 
         [Required]
         [Display(Name = "Gender")]
-        public string Gender { get; set; }
+        public virtual string Gender { get; set; }
 
-        public string Relationship { get; set; }
+        public List<RelationshipModel> Relationships { get; set; }
 
         public bool isHeadMember { get; set; }
     }
