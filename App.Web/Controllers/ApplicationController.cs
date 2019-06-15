@@ -121,18 +121,19 @@ namespace App.Web.Controllers
             {
                 return View("Relationship", sessionApp);
             }
-            for (int index = 0; index < application.HouseMembers.Count; index++)
-            {
-                var item = application.HouseMembers[index];
-                if (item.Relationships == null)
+            if(application.HouseMembers.Count >1)
+                for (int index = 0; index < application.HouseMembers.Count; index++)
                 {
-                    sessionApp.HouseMembers.ToList().Find(s => s.Id == item.Id).Relationships = application.HouseMembers.ToList().FindAll(r => r.Id != item.Id).Select(rl => new RelationshipModel { MemberId = item.Id, RelativeId = rl.Id }).ToList();
-                    ModelState.AddModelError($"HouseMembers[{index}].Relationships[0].Relationship", "Relationship is required");
-                    sessionApp.ActiveMemberId = item.Id;
-                    this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, sessionApp);
-                    return View("Relationship", sessionApp);
+                    var item = application.HouseMembers[index];
+                    if (item.Relationships == null)
+                    {
+                        sessionApp.HouseMembers.ToList().Find(s => s.Id == item.Id).Relationships = application.HouseMembers.ToList().FindAll(r => r.Id != item.Id).Select(rl => new RelationshipModel { MemberId = item.Id, RelativeId = rl.Id }).ToList();
+                        ModelState.AddModelError($"HouseMembers[{index}].Relationships[0].Relationship", "Relationship is required");
+                        sessionApp.ActiveMemberId = item.Id;
+                        this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, sessionApp);
+                        return View("Relationship", sessionApp);
+                    }
                 }
-            }
             return View("Confirmation");
         }
     }

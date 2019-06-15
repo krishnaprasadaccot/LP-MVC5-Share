@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using App.Api.Repositories;
 
 namespace App.Api
 {
@@ -25,6 +27,12 @@ namespace App.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<AppDbContext>()
+                    .AddDefaultTokenProviders();
+
+            RegisterDependencies(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +44,14 @@ namespace App.Api
             }
 
             app.UseMvc();
+        }
+
+        private void RegisterDependencies(IServiceCollection services)
+        {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IApplicationRepository, ApplicationRepository>();
+            services.AddScoped<IHouseMemberRepository, HouseMemberRepository>();
+            services.AddScoped<IRelationshipRepository, RelationshipRepository>();
         }
     }
 }
