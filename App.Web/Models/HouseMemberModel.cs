@@ -38,6 +38,6 @@ namespace App.Web.Models
 
         public List<RelationshipModel> Relationships { get; set; }
 
-        public bool isHeadMember { get; set; }
+        public bool IsHeadMember { get; set; }
     }
 }

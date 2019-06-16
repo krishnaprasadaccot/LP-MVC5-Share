@@ -11,5 +11,6 @@ namespace App.Web.Models
         public int Id { get; set; }
         public IList<HouseMemberModel> HouseMembers { get; set; }
         public int ActiveMemberId { get; set; }
+        public int Status { get; set; }
     }
 }

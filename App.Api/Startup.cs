@@ -42,7 +42,7 @@ namespace App.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("*");
             app.UseMvc();
         }
 

@@ -6,40 +6,82 @@ using Microsoft.AspNetCore.Mvc;
 using App.Api.Repositories;
 using App.Entities;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace App.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class ApplicationController : Controller
+    public class ApplicationController : BaseController
     {
-        IUnitOfWork _unitOfWork;
-        public ApplicationController(IUnitOfWork unitOfWork)
+        
+        public ApplicationController(IUnitOfWork unitOfWork):base(unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
         }
 
-        // GET: api/<controller>
+        
         [HttpGet]
         public IEnumerable<Application> Get()
         {
-            return _unitOfWork.ApplicationRepository.GetApplications();
+            try
+            {
+                return _unitOfWork.ApplicationRepository.GetApplications();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
-        // GET api/<controller>/5
+        
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Application Get(int id)
         {
-            return "value";
+            try
+            {
+                var app = _unitOfWork.ApplicationRepository.GetApplicationById(id);
+                app.HouseMembers = _unitOfWork.HouseMemberRepository.GetHouseMembers(id).ToList();
+                if(app.HouseMembers != null)
+                    {
+                    app.HouseMembers.ForEach(m =>
+                    {
+                        m.Relationships = _unitOfWork.RelationshipRepository.GetRelationships(m.Id).ToList();
+                    });
+                }
+                return app;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
-        // POST api/<controller>
-        [HttpPost]
-        public void Post([FromBody]string value)
+        
+        
+        public int Save([FromBody]Application application)
         {
+            try
+            {
+                _unitOfWork.ApplicationRepository.SaveApplication(application);
+                _unitOfWork.Save();
+                if(application.HouseMembers !=null)
+                    application.HouseMembers.ToList().ForEach(m =>
+                    {
+                        m.ApplicationId = application.Id;
+                        _unitOfWork.HouseMemberRepository.SaveHouseMember(m);
+                        _unitOfWork.Save();
+                    });
+                _unitOfWork.Save();
+                return application.Id;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
-        // PUT api/<controller>/5
+        
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {

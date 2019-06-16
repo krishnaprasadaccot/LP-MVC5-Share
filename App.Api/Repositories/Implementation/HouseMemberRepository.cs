@@ -32,7 +32,7 @@ namespace App.Api.Repositories
         {
             try
             {
-                return _context.HouseMembers.Where(m => m.ApplicationId == applicationId).ToList();
+                return _context.HouseMembers.Where(m => m.ApplicationId == applicationId).AsEnumerable();
             }
             catch (Exception)
             {

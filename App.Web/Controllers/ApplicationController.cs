@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using App.Entities;
+using Newtonsoft.Json;
 
 namespace App.Web.Controllers
 {
     public class ApplicationController : BaseController
     {
-        // GET: Application
         public ActionResult Index()
         {
-            var application  = this.GetSession<ApplicationViewModel>(CONSTANTS.SessionKeys.ACTIVE_APPLICATION) ?? new ApplicationViewModel() { HouseMembers = new List<HouseMemberModel>() { new HouseMemberModel() { isHeadMember = true } } };
+            var application  = this.GetSession<ApplicationViewModel>(CONSTANTS.SessionKeys.ACTIVE_APPLICATION) ?? new ApplicationViewModel() { HouseMembers = new List<HouseMemberModel>() { new HouseMemberModel() { IsHeadMember = true } } };
             this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, application);
             return View(application);
         }
@@ -50,9 +52,9 @@ namespace App.Web.Controllers
                 bool isAgeValid = true;
                 application.HouseMembers.Select((m, i) => new { item = m, index = i }).ToList().ForEach(m =>
                 {
-                    if (!m.item.isHeadMember)
+                    if (!m.item.IsHeadMember)
                     {
-                        if (m.item.DateOfBirth < application.HouseMembers.Where(h => h.isHeadMember).FirstOrDefault().DateOfBirth)
+                        if (m.item.DateOfBirth < application.HouseMembers.Where(h => h.IsHeadMember).FirstOrDefault().DateOfBirth)
                         {
                             ModelState.AddModelError($"HouseMembers[{m.index}].DateOfBirth", "Age should be less than Primary member");
                             isAgeValid = false;
@@ -62,10 +64,29 @@ namespace App.Web.Controllers
                 this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, application);
                 if(isAgeValid)
                 {
-                    if (isNext)
-                        return RedirectToAction("Relationship", new { id = application.HouseMembers.ToList().Find(m=>m.isHeadMember).Id });
+                    application.Status = 1;
+                    application.HouseMembers.ToList().ForEach(m =>
+                    {
+                        if (m.Id < 0)
+                            m.Id = 0;
+                    });
+                    Application postData = Mapper.Map<ApplicationViewModel, Application>(application);
+                    var response = this.ApiPost<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_SAVE, postData);
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        int.TryParse(response.Content.ReadAsStringAsync().Result,out int newAppId);
+                        postData = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, newAppId));
+                        this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, Mapper.Map<Application, ApplicationViewModel>(postData));
+                        if (isNext)
+                            return RedirectToAction("Relationship", new { id = postData.HouseMembers.ToList().Find(m => m.IsHeadMember).Id });
+                        else
+                            return RedirectToAction("Index","Home");
+                    }
                     else
-                        return View("Index", "Home");
+                    {
+                        ViewBag.Error = $"Application failed to save with error: {response.Content.ToString()}";
+                        return View("Index", application);
+                    }
                 }
                 else 
                     return View("Index", application);
@@ -77,7 +98,7 @@ namespace App.Web.Controllers
             var application = this.GetSession<ApplicationViewModel>(CONSTANTS.SessionKeys.ACTIVE_APPLICATION);
             
             var selectedMember = application.HouseMembers.ToList().Find(m => m.Id == id);
-            if(selectedMember.Relationships == null )
+            if(selectedMember.Relationships == null || selectedMember.Relationships.Count <=0)
                 selectedMember.Relationships = application.HouseMembers.ToList().FindAll(r => r.Id != id).Select(rl => new RelationshipModel { MemberId = selectedMember.Id, RelativeId = rl.Id }).ToList();
             application.ActiveMemberId = id;
             this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, application);
@@ -103,7 +124,7 @@ namespace App.Web.Controllers
             {
                 return View("Relationship", sessionApp);
             }
-            bool.TryParse(Request.QueryString["isSubmit"], out bool isSubmit);
+
             return RedirectToAction("Relationship", new { id });
         }
 
@@ -125,7 +146,7 @@ namespace App.Web.Controllers
                 for (int index = 0; index < application.HouseMembers.Count; index++)
                 {
                     var item = application.HouseMembers[index];
-                    if (item.Relationships == null)
+                    if (item.Relationships == null || item.Relationships.Count <=0)
                     {
                         sessionApp.HouseMembers.ToList().Find(s => s.Id == item.Id).Relationships = application.HouseMembers.ToList().FindAll(r => r.Id != item.Id).Select(rl => new RelationshipModel { MemberId = item.Id, RelativeId = rl.Id }).ToList();
                         ModelState.AddModelError($"HouseMembers[{index}].Relationships[0].Relationship", "Relationship is required");
@@ -134,7 +155,21 @@ namespace App.Web.Controllers
                         return View("Relationship", sessionApp);
                     }
                 }
-            return View("Confirmation");
+
+            
+            var response = this.ApiPost<IEnumerable<HouseMember>>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.RELATIONSHIP_SAVE, Mapper.Map<IEnumerable<HouseMemberModel>, IEnumerable<HouseMember>>(sessionApp.HouseMembers));
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var savedApp = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, sessionApp.Id));
+                this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, Mapper.Map<Application, ApplicationViewModel>(savedApp));
+
+                return View("Confirmation");
+            }
+            else
+            {
+                ViewBag.Error = $"Application failed to save with error: {response.Content.ToString()}";
+                return View("Relationship", sessionApp);
+            }
         }
     }
 }

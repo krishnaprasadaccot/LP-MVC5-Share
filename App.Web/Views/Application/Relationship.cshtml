@@ -25,7 +25,7 @@
                     @for (int index = 0; index < Model.HouseMembers.Count; index++)
                     {
                         @Html.HiddenFor(i => Model.HouseMembers[index].Id)
-                        @Html.HiddenFor(i => Model.HouseMembers[index].isHeadMember)
+                        @Html.HiddenFor(i => Model.HouseMembers[index].IsHeadMember)
                         @Html.HiddenFor(i => Model.HouseMembers[index].FirstName)
                         @Html.HiddenFor(i => Model.HouseMembers[index].LastName)
                         @Html.HiddenFor(i => Model.HouseMembers[index].DateOfBirth)
@@ -49,11 +49,12 @@
                                 {
                                     @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship)
                                 }
+                                @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Id)
                                 @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].RelativeId)
                                 @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].MemberId)
                                 @Html.Label("* ", new { @class = "text-danger" })
                                 @Html.Label("Relationship to " + Model.HouseMembers.Where(m => m.Id == Model.HouseMembers[index].Relationships[relIndex].RelativeId).First().FirstName, new { @class = "control-label" })
-                                @Html.DropDownListFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship, new SelectList(new[] { new SelectListItem() { Text = "Father", Value = "Father" }, new SelectListItem() { Text = "Mother", Value = "Mother" }, new SelectListItem() { Text = "Daughter", Value = "Daughter" }, new SelectListItem() { Text = "Son", Value = "Son" } }, "Value", "Text", Model.HouseMembers[index].Relationships[relIndex].Relationship), "Select", new { @class = "form-control required relationship"})
+                                @Html.DropDownListFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship, new SelectList(new[] { new SelectListItem() { Text = "Father", Value = "Father" }, new SelectListItem() { Text = "Mother", Value = "Mother" }, new SelectListItem() { Text = "Daughter", Value = "Daughter" }, new SelectListItem() { Text = "Son", Value = "Son" } }, "Value", "Text", Model.HouseMembers[index].Relationships[relIndex].Relationship), "Select", new { @class = "form-control required relationship" })
                                 @Html.ValidationMessageFor(m => Model.HouseMembers[index].Relationships[relIndex].Relationship, "", new { @class = "text-danger" })
                             </div>
                             }
