@@ -14,7 +14,13 @@ namespace App.Web
             public const string BASE_ADDRESS = "http://localhost:53290/api/";
             public const string APPLICATION_SAVE = "Application/Save";
             public const string APPLICATION_GET = "Application/Get/{0}";
+            public const string APPLICATION_GET_ALL = "Application/Get";
             public const string RELATIONSHIP_SAVE = "HoseMember/SaveRelationships";
+        }
+        public enum ApplicationStatus
+        {
+            Saved=1,
+            Submitted
         }
     }
 }

@@ -12,9 +12,14 @@ namespace App.Web.Controllers
 {
     public class ApplicationController : BaseController
     {
-        public ActionResult Index()
+        public ActionResult Index(int id=0)
         {
-            var application  = this.GetSession<ApplicationViewModel>(CONSTANTS.SessionKeys.ACTIVE_APPLICATION) ?? new ApplicationViewModel() { HouseMembers = new List<HouseMemberModel>() { new HouseMemberModel() { IsHeadMember = true } } };
+            var application = id <= 0 ? this.GetSession<ApplicationViewModel>(CONSTANTS.SessionKeys.ACTIVE_APPLICATION) ?? new ApplicationViewModel()
+            {
+                CreatedBy = HttpContext.User.Identity.Name,
+                CreatedOn = DateTime.Now,
+                HouseMembers = new List<HouseMemberModel>() { new HouseMemberModel() { IsHeadMember = true } }
+            } : Mapper.Map<Application, ApplicationViewModel>(ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, id)));
             this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, application);
             return View(application);
         }
@@ -64,7 +69,9 @@ namespace App.Web.Controllers
                 this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, application);
                 if(isAgeValid)
                 {
-                    application.Status = 1;
+                    application.Status = (int)CONSTANTS.ApplicationStatus.Saved;
+                    application.CreatedBy = HttpContext.User.Identity.Name;
+                    application.CreatedOn = DateTime.Now;
                     application.HouseMembers.ToList().ForEach(m =>
                     {
                         if (m.Id < 0)
@@ -156,7 +163,7 @@ namespace App.Web.Controllers
                     }
                 }
 
-            
+            //application.Status = (int)CONSTANTS.ApplicationStatus.Saved;
             var response = this.ApiPost<IEnumerable<HouseMember>>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.RELATIONSHIP_SAVE, Mapper.Map<IEnumerable<HouseMemberModel>, IEnumerable<HouseMember>>(sessionApp.HouseMembers));
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -170,6 +177,12 @@ namespace App.Web.Controllers
                 ViewBag.Error = $"Application failed to save with error: {response.Content.ToString()}";
                 return View("Relationship", sessionApp);
             }
+        }
+
+        public ActionResult AllApplications()
+        {
+            var allApps = ApiGet<List<Application>>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_GET_ALL);
+            return View(allApps);
         }
     }
 }

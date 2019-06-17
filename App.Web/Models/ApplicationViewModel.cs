@@ -1,7 +1,4 @@
-﻿
-
-
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 
 namespace App.Web.Models
@@ -12,5 +9,7 @@ namespace App.Web.Models
         public IList<HouseMemberModel> HouseMembers { get; set; }
         public int ActiveMemberId { get; set; }
         public int Status { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

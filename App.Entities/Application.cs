@@ -10,5 +10,7 @@ namespace App.Entities
         public int Id { get; set; }
         public List<HouseMember> HouseMembers { get; set; }
         public int Status { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

@@ -108,3 +108,4 @@ C:\Users\v-kracco\source\repos\LP-MVC5\App.Web\bin\AutoMapper.pdb
 C:\Users\v-kracco\source\repos\LP-MVC5\App.Web\bin\AutoMapper.xml
 C:\Users\v-kracco\source\repos\LP-MVC5\App.Web\bin\App.Entities.dll
 C:\Users\v-kracco\source\repos\LP-MVC5\App.Web\bin\App.Entities.pdb
+C:\Users\v-kracco\source\repos\LP-MVC5\App.Web\bin\GridMvc.dll
