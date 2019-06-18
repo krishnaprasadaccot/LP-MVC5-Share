@@ -1,0 +1,68 @@
+﻿@{
+    Layout = null;
+}
+@model App.Web.Models.ApplicationViewModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    <title></title>
+</head>
+<body>
+   
+        <div class="panel panel-default">
+            <div class="panel-heading"><div class="row"><h4 class="col-md-12">Application #@Model.Id</h4></div></div>
+            
+            <div class="panel-body">
+                @if ((Model.HouseMembers.Count > 0))
+                {
+                    <h4>Household Members</h4>
+                    for (int index = 0; index < Model.HouseMembers.Count; index++)
+                    {
+                        <div class="row"><hr />
+                            <div class="col-md-12">
+                                <b>Household Member @(index + 1) : </b>
+                            
+                                @Html.Label(Model.HouseMembers[index].FirstName)&nbsp;
+                                @Html.Label(Model.HouseMembers[index].MiddleName)&nbsp;
+                                @Html.Label(Model.HouseMembers[index].LastName)
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                @Html.Label("Date of Birth : ")&nbsp;
+                                @Html.Label(Model.HouseMembers[index].DateOfBirth.Value.ToShortDateString())
+                            </div>
+                            <div class="col-md-4">
+                                @Html.Label("Gender : ")&nbsp;
+                                @Html.Label(Model.HouseMembers[index].Gender)
+                            </div>
+                        </div>
+                        if ((Model.HouseMembers[index].Relationships ?? new List<App.Web.Models.RelationshipModel>()).Count > 0)
+                        {
+                            for (int relIndex = 0; relIndex < Model.HouseMembers[index].Relationships?.Count; relIndex++)
+                            {
+                                <div class="row">
+                                    
+                                        <div class="col-md-12">
+                                            <b>Relationships</b>
+                                        </div>
+                                        <div class="col-md-4">
+                                            @Html.Label("Relationship to " + Model.HouseMembers.Where(m => m.Id == Model.HouseMembers[index].Relationships[relIndex].RelativeId).First().FirstName, new { @class = "control-label" })&nbsp;:&nbsp;
+                                            @Html.Label(Model.HouseMembers[index].Relationships[relIndex].Relationship)&nbsp;
+                                        </div>
+                                    
+                                </div>
+                            }
+                         }
+                     }
+                 }
+
+                </div>
+    </div>
+    
+</body>
+</html>

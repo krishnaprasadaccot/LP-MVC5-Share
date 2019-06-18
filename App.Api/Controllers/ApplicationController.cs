@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using App.Api.Repositories;
 using App.Entities;
+using System.Collections;
 
 namespace App.Api.Controllers
 {
@@ -55,7 +56,18 @@ namespace App.Api.Controllers
             }
         }
 
-        
+        public IEnumerable<Application> Search(Application search)
+        {
+            try
+            {
+                return _unitOfWork.ApplicationRepository.Search(search);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         
         public int Save([FromBody]Application application)
         {

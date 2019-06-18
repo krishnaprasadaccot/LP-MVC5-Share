@@ -19,10 +19,17 @@ namespace App.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            Mapper.Initialize(cfg => {
+            Mapper.Initialize(cfg =>
+            {
                 cfg.AddProfile<MapperProfile>();
                 //cfg.CreateMap<ApplicationViewModel, Application>();
             });
+        }
+        protected void Application_Error(object sender, EventArgs e)
+        {
+            Exception exception = Server.GetLastError();
+            Response.Clear();
+            Response.Redirect("~/Error/Index");
         }
     }
 }

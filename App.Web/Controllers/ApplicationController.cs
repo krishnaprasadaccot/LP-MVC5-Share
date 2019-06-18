@@ -7,9 +7,11 @@ using System.Web.Mvc;
 using AutoMapper;
 using App.Entities;
 using Newtonsoft.Json;
+using SelectPdf;
 
 namespace App.Web.Controllers
 {
+    [Authorize]
     public class ApplicationController : BaseController
     {
         public ActionResult Index(int id=0)
@@ -170,7 +172,7 @@ namespace App.Web.Controllers
                 var savedApp = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, sessionApp.Id));
                 this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, Mapper.Map<Application, ApplicationViewModel>(savedApp));
 
-                return View("Confirmation");
+                return View("Confirmation",application);
             }
             else
             {
@@ -179,10 +181,71 @@ namespace App.Web.Controllers
             }
         }
 
-        public ActionResult AllApplications()
+        public ActionResult Search()
         {
-            var allApps = ApiGet<List<Application>>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_GET_ALL);
-            return View(allApps);
+            SearchViewModel searchQuery = this.GetSession<SearchViewModel>(CONSTANTS.SessionKeys.SEARCH_QUERY)?? new SearchViewModel();
+            if (Request.QueryString.Count <=0)
+            {
+                this.SetSession(CONSTANTS.SessionKeys.SEARCH_QUERY, null);
+                searchQuery = null;
+            }
+            return View(searchQuery);
+        }
+
+        [HttpPost]
+        public ActionResult Search(SearchViewModel search)
+        {
+            ModelState.Clear();
+            bool isCondition = false;
+            Application searchQuery = new Application();
+            searchQuery.HouseMembers = new List<HouseMember>() { new HouseMember()};
+            if(search.ApplicationId != null)
+            {
+                searchQuery.Id = search.ApplicationId.Value;
+                isCondition = true;
+            }
+
+            if (search.FirstName != null)
+            {
+                searchQuery.HouseMembers[0].FirstName = search.FirstName;
+                isCondition = true;
+            }
+
+            if (search.LastName != null)
+            {
+                searchQuery.HouseMembers[0].LastName = search.LastName;
+                isCondition = true;
+            }
+
+            if (search.DateOfBirth != null)
+            {
+                searchQuery.HouseMembers[0].DateOfBirth = search.DateOfBirth;
+                isCondition = true;
+            }
+            if (search.ApplicationStatus > 0)
+            {
+                searchQuery.Status = search.ApplicationStatus;
+                isCondition = true;
+            }
+            if (isCondition == true)
+            {
+                var response = ApiPost<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_SEARCH, searchQuery);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var searchResults = JsonConvert.DeserializeObject<List<Application>>(response.Content.ReadAsStringAsync().Result);
+                    if (searchResults.Count > 100)
+                        ViewBag.Error = "Please refine your search criteria, more than 100 results are found.";
+                    else
+                        search.SearchResults = searchResults;
+                }
+            }
+            else
+            {
+                ViewBag.Error = "Minimum one search criteria needs to provide.";
+            }
+            this.SetSession(CONSTANTS.SessionKeys.SEARCH_QUERY, search);
+            return View(search);
+            
         }
     }
 }

@@ -8,6 +8,7 @@ namespace App.Web
         {
             public const string ACTIVE_APPLICATION = "ActiveApplication";
             public const string HOUSE_MEMBERS = "HouseMembers";
+            public const string SEARCH_QUERY = "SearchQuery";
         }
         public struct ApiUrls
         {
@@ -15,6 +16,7 @@ namespace App.Web
             public const string APPLICATION_SAVE = "Application/Save";
             public const string APPLICATION_GET = "Application/Get/{0}";
             public const string APPLICATION_GET_ALL = "Application/Get";
+            public const string APPLICATION_SEARCH = "Application/Search";
             public const string RELATIONSHIP_SAVE = "HoseMember/SaveRelationships";
         }
         public enum ApplicationStatus

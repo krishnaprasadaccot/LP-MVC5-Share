@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace App.Web.Controllers
 {
-   // [Authorize]
+  
     public class BaseController : Controller
     {
         
@@ -34,7 +34,10 @@ namespace App.Web.Controllers
                 {
                     client.BaseAddress = new Uri(address);
                     var postData = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-                    return client.PostAsync(uri, postData).Result;
+                    var response = client.PostAsync(uri, postData);
+                    response.Wait();
+                    return response.Result;
+                    
                 }
             }
             catch (Exception)

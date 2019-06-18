@@ -12,5 +12,6 @@ namespace App.Api.Repositories
         Application GetApplicationById(int id);
         void SaveApplication(Application application);
         void Save();
+        IEnumerable<Application> Search(Application search);
     }
 }
