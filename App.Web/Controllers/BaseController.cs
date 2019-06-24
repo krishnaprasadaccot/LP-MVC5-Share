@@ -50,21 +50,12 @@ namespace App.Web.Controllers
 
         protected T ApiGet<T>(string address, string uri)
         {
-            try
-            {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(address);
                     var response =  client.GetAsync(uri).Result;
                     return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
                 }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            
         }
     }
 }

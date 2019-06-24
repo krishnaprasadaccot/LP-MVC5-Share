@@ -80,7 +80,7 @@ namespace App.Web.Controllers
                             m.Id = 0;
                     });
                     Application postData = Mapper.Map<ApplicationViewModel, Application>(application);
-                    var response = this.ApiPost<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_SAVE, postData);
+                    var response = this.ApiPost(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_SAVE, postData);
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         int.TryParse(response.Content.ReadAsStringAsync().Result,out int newAppId);
@@ -165,12 +165,18 @@ namespace App.Web.Controllers
                     }
                 }
 
-            //application.Status = (int)CONSTANTS.ApplicationStatus.Saved;
-            var response = this.ApiPost<IEnumerable<HouseMember>>(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.RELATIONSHIP_SAVE, Mapper.Map<IEnumerable<HouseMemberModel>, IEnumerable<HouseMember>>(sessionApp.HouseMembers));
+            
+            
+            var response = this.ApiPost(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.RELATIONSHIP_SAVE, Mapper.Map<IEnumerable<HouseMemberModel>, IEnumerable<HouseMember>>(sessionApp.HouseMembers));
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var savedApp = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, sessionApp.Id));
                 this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, Mapper.Map<Application, ApplicationViewModel>(savedApp));
+
+                Application postData = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, application.Id));
+                postData.HouseMembers = null;
+                postData.Status = (int)CONSTANTS.ApplicationStatus.Submitted;
+                this.ApiPost(CONSTANTS.ApiUrls.BASE_ADDRESS, CONSTANTS.ApiUrls.APPLICATION_SAVE, postData);
 
                 return View("Confirmation",application);
             }

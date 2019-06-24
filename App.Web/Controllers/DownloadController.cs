@@ -18,7 +18,7 @@ namespace App.Web.Controllers
             HtmlToPdf converter = new HtmlToPdf();
 
             // create a new pdf document converting an url 
-            PdfDocument doc = converter.ConvertUrl(Request.Url.AbsoluteUri.ToString().ToLower().Replace("index", "Receipt"));
+            PdfDocument doc = converter.ConvertUrl(Request.Url.AbsoluteUri.ToString().ToLower().Replace("index", $"Receipt/{appId}"));
 
             // save pdf document 
             byte[] pdf = doc.Save();
@@ -28,14 +28,14 @@ namespace App.Web.Controllers
 
             // return resulted pdf document 
             FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-            fileResult.FileDownloadName = $"Document{DateTime.Now.Ticks}.pdf";
+            fileResult.FileDownloadName = $"Receipt-{DateTime.Now.Ticks}.pdf";
             return fileResult;
         }
 
 
-        public ActionResult Receipt()
+        public ActionResult Receipt(int id)
         {
-            var savedApp = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, 21));
+            var savedApp = ApiGet<Application>(CONSTANTS.ApiUrls.BASE_ADDRESS, string.Format(CONSTANTS.ApiUrls.APPLICATION_GET, id));
             return View(Mapper.Map<Application, ApplicationViewModel>(savedApp));
         }
 

@@ -11,6 +11,7 @@ namespace App.Web.Controllers
     {
         public ActionResult Index()
         {
+            this.SetSession(CONSTANTS.SessionKeys.ACTIVE_APPLICATION, null);
             return View();
         }
     }

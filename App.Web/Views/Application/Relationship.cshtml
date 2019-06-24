@@ -5,7 +5,7 @@
 
 @using (Html.BeginForm("Relationship", "Application", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "frmApp" }))
 {
-    @Html.HiddenFor(i => Model.Id)
+    <input type="hidden" value="@Model.Id" name="Id" id="Id"/>
     @Html.HiddenFor(i => Model.ActiveMemberId)
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -44,19 +44,19 @@
                         <div role="tabpanel" class="tab-pane @(Model.HouseMembers[index].Id==Model.ActiveMemberId?"active":"") row" id="@Model.HouseMembers[index].Id">
                             @for (int relIndex = 0; relIndex < Model.HouseMembers[index].Relationships?.Count; relIndex++)
                             {
-                            <div class="col-md-3">
-                                @if (Model.HouseMembers[index].Id != Model.ActiveMemberId)
-                                {
-                                    @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship)
-                                }
-                                @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Id)
-                                @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].RelativeId)
-                                @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].MemberId)
-                                @Html.Label("* ", new { @class = "text-danger" })
-                                @Html.Label("Relationship to " + Model.HouseMembers.Where(m => m.Id == Model.HouseMembers[index].Relationships[relIndex].RelativeId).First().FirstName, new { @class = "control-label" })
-                                @Html.DropDownListFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship, new SelectList(new[] { new SelectListItem() { Text = "Father", Value = "Father" }, new SelectListItem() { Text = "Mother", Value = "Mother" }, new SelectListItem() { Text = "Daughter", Value = "Daughter" }, new SelectListItem() { Text = "Son", Value = "Son" } }, "Value", "Text", Model.HouseMembers[index].Relationships[relIndex].Relationship), "Select", new { @class = "form-control required relationship" })
-                                @Html.ValidationMessageFor(m => Model.HouseMembers[index].Relationships[relIndex].Relationship, "", new { @class = "text-danger" })
-                            </div>
+                                <div class="col-md-3">
+                                    @if (Model.HouseMembers[index].Id != Model.ActiveMemberId)
+                                    {
+                                        @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship)
+                                    }
+                                    @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].Id)
+                                    @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].RelativeId)
+                                    @Html.HiddenFor(i => Model.HouseMembers[index].Relationships[relIndex].MemberId)
+                                    @Html.Label("* ", new { @class = "text-danger" })
+                                    @Html.Label("Relationship to " + Model.HouseMembers.Where(m => m.Id == Model.HouseMembers[index].Relationships[relIndex].RelativeId).First().FirstName, new { @class = "control-label" })
+                                    @Html.DropDownListFor(i => Model.HouseMembers[index].Relationships[relIndex].Relationship, new SelectList(new[] { new SelectListItem() { Text = "Father", Value = "Father" }, new SelectListItem() { Text = "Mother", Value = "Mother" }, new SelectListItem() { Text = "Daughter", Value = "Daughter" }, new SelectListItem() { Text = "Son", Value = "Son" } }, "Value", "Text", Model.HouseMembers[index].Relationships[relIndex].Relationship), "Select", new { @class = "form-control required relationship" })
+                                    @Html.ValidationMessageFor(m => Model.HouseMembers[index].Relationships[relIndex].Relationship, "", new { @class = "text-danger" })
+                                </div>
                             }
                         </div>
                     }
@@ -91,5 +91,5 @@
     //        return false;
     //    }
     //}
-    </script>
+</script>
 

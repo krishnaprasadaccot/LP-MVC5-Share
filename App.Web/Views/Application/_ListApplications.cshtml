@@ -9,7 +9,7 @@
     {
         columns.Add(col => col.Id, "Id").Titled("Application ID");
         columns.Add(col => col.CreatedBy).Titled("Created By").Sortable(true).Filterable(true);
-        columns.Add(col => col.Status).Titled("Status").RenderValueAs(col => col.Status == 0 ? "Saved" : "Submitted").Sortable(true).Filterable(true);
+        columns.Add(col => col.Status).Titled("Status").RenderValueAs(col => col.Status == 1 ? "Saved" : "Submitted").Sortable(true).Filterable(true);
         columns.Add().Encoded(false).Sanitized(false)
         .RenderValueAs(col => @Html.ActionLink("Edit", "Index", "Application", new { Id = col.Id }, null));
     }).WithPaging(10)
